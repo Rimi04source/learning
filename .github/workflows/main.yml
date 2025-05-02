@@ -1,0 +1,10 @@
+name: Aadarsh
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:   
+    - name: Aadarsh
+    - run:  echo "My name is Aadarsh"
+ 
