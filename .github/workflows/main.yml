@@ -1,10 +1,26 @@
-name: Aadarsh
-on: [push]
+# .github/workflows/main.yml
+
+name: Main Workflow
+
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  call-azure-template:
     runs-on: ubuntu-latest
-    steps:   
-    - name: Aadarsh
-      run:  echo "My name is Aadarsh"
+
+    steps:
+      - name: Checkout Azure Repo
+        uses: actions/checkout@v3
+        with:
+          repository: 'senarindam/Payel%20Bose/Jfrog'
+          token: ${{ secrets.AZURE_DEVOPS_TOKEN }}  
+          
+      - name: Use Template from Azure Repo
+        uses: ./.github/workflows/name.yml
+        with:
+          name: 'Payel Bose'  
+
  
