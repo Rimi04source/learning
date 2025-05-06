@@ -13,27 +13,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the GitHub repository (your main pipeline)
+      # Step 1: Checkout the GitHub repository
       - name: Checkout GitHub repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up Azure DevOps credentials (using the GitHub PAT stored in secrets)
+      # Step 2: Set up Azure DevOps credentials using the GitHub PAT
       - name: Set up Azure DevOps credentials
         run: |
-          # Store Azure DevOps credentials (use the GitHub PAT stored in secrets)
+          # Store Azure DevOps credentials in a temporary credentials file
           echo "https://:${{ secrets.AZURE_DEVOPS_TOKEN }}@dev.azure.com" > ~/.git-credentials
           git config --global credential.helper store
 
-      # Step 3: Clone the Azure DevOps repository containing the template
+      # Step 3: Debug - Test PAT access to Azure DevOps
+      - name: Test PAT access to Azure DevOps
+        run: |
+          curl -u :${{ secrets.AZURE_DEVOPS_TOKEN }} \
+            https://dev.azure.com/senarindam/Payel%20Bose/_apis/git/repositories/Jfrog
+
+      # Step 4: Clone the Azure DevOps repository containing the template
       - name: Clone Azure DevOps repository containing template
         run: |
-          # Define the Azure DevOps repository URL
-          AZURE_DEVOPS_URL="https://dev.azure.com/senarindam/Payel%20Bose/_git/Jfrog"
+          # Define the Azure DevOps repository URL with the PAT directly in the URL
+          AZURE_DEVOPS_URL="https://${{ secrets.AZURE_DEVOPS_TOKEN }}@dev.azure.com/senarindam/Payel%20Bose/_git/Jfrog"
           
-          # Clone the Azure DevOps repository
+          # Clone the Azure DevOps repository securely
           git clone $AZURE_DEVOPS_URL
 
-      # Step 4: Navigate to the directory where the template is stored and run it
+      # Step 5: Navigate to the directory where the template is stored and run it
       - name: Execute template from Azure DevOps repository
         run: |
           # Change directory to where the template is located (adjust path if needed)
