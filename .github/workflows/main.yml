@@ -1,26 +1,43 @@
-# .github/workflows/main.yml
-
-name: Main Workflow
+name: Call Azure DevOps Template
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      username:
+        description: 'Enter your name'
+        required: true
+        default: 'Payel'
 
 jobs:
-  call-azure-template:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Azure Repo
+      # Step 1: Checkout the current GitHub repository
+      - name: Checkout GitHub repository
         uses: actions/checkout@v3
-        with:
-          repository: 'senarindam/Payel%20Bose/Jfrog'
-          token: ${{ secrets.AZURE_DEVOPS_TOKEN }}  
-          
-      - name: Use Template from Azure Repo
-        uses: ./.github/workflows/name.yml
-        with:
-          name: 'Payel Bose'  
 
- 
+      # Step 2: Set up Azure DevOps credentials
+      - name: Set up Azure DevOps credentials
+        run: |
+          # Store Azure DevOps credentials (use the GitHub PAT stored in secrets)
+          echo "https://:${{ secrets.AZURE_DEVOPS_TOKEN }}@dev.azure.com" > ~/.git-credentials
+          git config --global credential.helper store
+
+      # Step 3: Clone the Azure DevOps repository containing the template
+      - name: Clone Azure DevOps repository containing template
+        run: |
+          AZURE_DEVOPS_URL="https://dev.azure.com/senarindam/Payel%20Bose/_git/Jfrog"
+          git clone $AZURE_DEVOPS_URL
+
+      # Step 4: Navigate to the directory where the template is stored and run it
+      - name: Execute template from Azure DevOps repository
+        run: |
+          # Change directory to the location of the template (adjust path if necessary)
+          cd Jfrog/.github/workflows
+          
+          # Execute the template (this should match the template's content and expected behavior)
+          echo "Running the 'Print My Name' template from Azure DevOps"
+          
+          # Since the template is simple, we just run the echo command from the template here
+          echo "Hello, my name is ${{ github.event.inputs.username }}"
