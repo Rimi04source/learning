@@ -24,13 +24,7 @@ jobs:
           echo "https://:${{ secrets.AZURE_DEVOPS_TOKEN }}@dev.azure.com" > ~/.git-credentials
           git config --global credential.helper store
 
-      # Step 3: Debug - Test PAT access to Azure DevOps
-      - name: Test PAT access to Azure DevOps
-        run: |
-          curl -u :${{ secrets.AZURE_DEVOPS_TOKEN }} \
-            https://dev.azure.com/senarindam/Payel%20Bose/_apis/git/repositories/Jfrog
-
-      # Step 4: Clone the Azure DevOps repository containing the template
+      # Step 3: Clone the Azure DevOps repository containing template
       - name: Clone Azure DevOps repository containing template
         run: |
           # Define the Azure DevOps repository URL with the PAT directly in the URL
@@ -39,14 +33,31 @@ jobs:
           # Clone the Azure DevOps repository securely
           git clone $AZURE_DEVOPS_URL
 
-      # Step 5: Navigate to the directory where the template is stored and run it
+      # Step 4: Debug - Check if the repository has been cloned correctly
+      - name: List files in the current directory
+        run: |
+          echo "Current directory contents:"
+          ls -R
+
+      # Step 5: Verify if the Jfrog directory exists
+      - name: Verify Jfrog repository exists
+        run: |
+          if [ -d "Jfrog" ]; then
+            echo "Jfrog directory exists."
+            ls -R Jfrog
+          else
+            echo "Jfrog directory does not exist."
+          fi
+
+      # Step 6: Navigate to the directory where the template is located and run it
       - name: Execute template from Azure DevOps repository
         run: |
-          # Change directory to where the template is located (adjust path if needed)
-          cd Jfrog/.github/workflows
-          
-          # Print name using the template
-          echo "Running the 'Print My Name' template from Azure DevOps"
-          
-          # Execute the template (this should match the template's behavior)
-          echo "Hello, my name is ${{ github.event.inputs.username }}"
+          # Check if the Jfrog directory exists
+          if [ -d "Jfrog/.github/workflows" ]; then
+            cd Jfrog/.github/workflows
+            echo "Running the 'Print My Name' template from Azure DevOps"
+            # Execute the template (this should match the template's behavior)
+            echo "Hello, my name is ${{ github.event.inputs.username }}"
+          else
+            echo "Error: .github/workflows directory not found in Jfrog repository."
+          fi
