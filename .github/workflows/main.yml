@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the current GitHub repository
+      # Step 1: Checkout the GitHub repository (your main pipeline)
       - name: Checkout GitHub repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up Azure DevOps credentials
+      # Step 2: Set up Azure DevOps credentials (using the GitHub PAT stored in secrets)
       - name: Set up Azure DevOps credentials
         run: |
           # Store Azure DevOps credentials (use the GitHub PAT stored in secrets)
@@ -27,17 +27,20 @@ jobs:
       # Step 3: Clone the Azure DevOps repository containing the template
       - name: Clone Azure DevOps repository containing template
         run: |
+          # Define the Azure DevOps repository URL
           AZURE_DEVOPS_URL="https://dev.azure.com/senarindam/Payel%20Bose/_git/Jfrog"
+          
+          # Clone the Azure DevOps repository
           git clone $AZURE_DEVOPS_URL
 
       # Step 4: Navigate to the directory where the template is stored and run it
       - name: Execute template from Azure DevOps repository
         run: |
-          # Change directory to the location of the template (adjust path if necessary)
+          # Change directory to where the template is located (adjust path if needed)
           cd Jfrog/.github/workflows
           
-          # Execute the template (this should match the template's content and expected behavior)
+          # Print name using the template
           echo "Running the 'Print My Name' template from Azure DevOps"
           
-          # Since the template is simple, we just run the echo command from the template here
+          # Execute the template (this should match the template's behavior)
           echo "Hello, my name is ${{ github.event.inputs.username }}"
