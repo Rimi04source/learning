@@ -30,29 +30,31 @@ jobs:
           # Define the Azure DevOps repository URL with the PAT directly in the URL
           AZURE_DEVOPS_URL="https://${{ secrets.AZURE_DEVOPS_TOKEN }}@dev.azure.com/senarindam/Payel%20Bose/_git/Jfrog"
           
-          # Clone the Azure DevOps repository securely
-          git clone $AZURE_DEVOPS_URL
+          # Perform a full clone (no sparse checkout)
+          git clone --no-checkout $AZURE_DEVOPS_URL
+          cd Jfrog
+          git checkout main  # Ensure we're on the main branch
+          git pull origin main  # Ensure we have the latest version
 
       # Step 4: Debug - Check if the repository has been cloned correctly
-      - name: List files in the current directory
+      - name: List files in the Jfrog directory
         run: |
-          echo "Current directory contents:"
-          ls -R
+          echo "Contents of the cloned Jfrog repository:"
+          ls -R Jfrog
 
-      # Step 5: Verify if the Jfrog directory exists
-      - name: Verify Jfrog repository exists
+      # Step 5: Check if .github/workflows directory exists in the Jfrog repo
+      - name: Verify .github/workflows directory exists
         run: |
-          if [ -d "Jfrog" ]; then
-            echo "Jfrog directory exists."
-            ls -R Jfrog
+          if [ -d "Jfrog/.github/workflows" ]; then
+            echo ".github/workflows directory found."
+            ls -R Jfrog/.github/workflows
           else
-            echo "Jfrog directory does not exist."
+            echo "Error: .github/workflows directory not found in Jfrog repository."
           fi
 
       # Step 6: Navigate to the directory where the template is located and run it
       - name: Execute template from Azure DevOps repository
         run: |
-          # Check if the Jfrog directory exists
           if [ -d "Jfrog/.github/workflows" ]; then
             cd Jfrog/.github/workflows
             echo "Running the 'Print My Name' template from Azure DevOps"
